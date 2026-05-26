@@ -1,0 +1,60 @@
+groups:
+  - name: application_alerts
+    interval: 30s
+    rules:
+      # Backend API Alerts
+      - alert: BackendDown
+        expr: up{job="backend-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend API is down"
+          description: "Backend service at localhost:5000 is not responding"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 5% for the last 5 minutes"
+
+      # Database Alerts
+      - alert: MongoDBDown
+        expr: up{job="mongodb"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MongoDB is down"
+          description: "MongoDB server is not responding"
+
+      # Performance Alerts
+      - alert: HighCPUUsage
+        expr: node_cpu_seconds_total > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for 10 minutes"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85% for 10 minutes"
+
+      - alert: DiskSpaceRunningOut
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk space running out"
+          description: "Less than 10% disk space remaining"

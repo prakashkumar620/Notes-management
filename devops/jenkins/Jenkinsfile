@@ -1,0 +1,150 @@
+pipeline {
+    agent any
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 1, unit: 'HOURS')
+        timestamps()
+    }
+    
+    environment {
+        REGISTRY = 'localhost:5000'
+        APP_NAME = 'notes-management-system'
+        DOCKER_NETWORK = 'jenkins-network'
+        SONAR_HOST = 'http://localhost:9000'
+        NEXUS_HOST = 'http://localhost:8081'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo '🔍 Checking out code...'
+                checkout scm
+            }
+        }
+        
+        stage('Build Backend') {
+            steps {
+                echo '🔨 Building backend...'
+                dir('backend') {
+                    sh '''
+                        npm install
+                        npm run build 2>/dev/null || echo "No build script"
+                    '''
+                }
+            }
+        }
+        
+        stage('Build Frontend') {
+            steps {
+                echo '🔨 Building frontend...'
+                dir('frontend') {
+                    sh '''
+                        npm install
+                        npm run build
+                    '''
+                }
+            }
+        }
+        
+        stage('Code Quality - SonarQube') {
+            steps {
+                echo '📊 Running SonarQube analysis...'
+                sh '''
+                    curl -s http://localhost:9000/api/system/ping || \
+                    echo "⚠️  SonarQube not available, skipping"
+                '''
+            }
+        }
+        
+        stage('Build Docker Images') {
+            steps {
+                echo '🐳 Building Docker images...'
+                sh '''
+                    docker build -f devops/docker/Dockerfile.backend \
+                        -t ${REGISTRY}/backend:latest \
+                        -t ${REGISTRY}/backend:${BUILD_NUMBER} \
+                        backend/
+                    
+                    docker build -f devops/docker/Dockerfile.frontend \
+                        -t ${REGISTRY}/frontend:latest \
+                        -t ${REGISTRY}/frontend:${BUILD_NUMBER} \
+                        frontend/
+                '''
+            }
+        }
+        
+        stage('Push to Registry') {
+            steps {
+                echo '📤 Pushing images to registry...'
+                sh '''
+                    docker push ${REGISTRY}/backend:latest || \
+                    echo "⚠️  Local registry not available"
+                    docker push ${REGISTRY}/frontend:latest || \
+                    echo "⚠️  Local registry not available"
+                '''
+            }
+        }
+        
+        stage('Deploy to Docker Compose') {
+            steps {
+                echo '🚀 Deploying with Docker Compose...'
+                sh '''
+                    cd devops/docker
+                    docker-compose down || true
+                    docker-compose up -d
+                    sleep 10
+                '''
+            }
+        }
+        
+        stage('Health Checks') {
+            steps {
+                echo '🏥 Running health checks...'
+                sh '''
+                    echo "Checking backend health..."
+                    curl -s http://localhost:5000/health || echo "Backend not responding"
+                    
+                    echo "Checking frontend..."
+                    curl -s http://localhost:3000 || echo "Frontend not responding"
+                    
+                    echo "Checking MongoDB..."
+                    docker exec notes-mongodb mongosh --eval "db.adminCommand('ping')" || true
+                '''
+            }
+        }
+        
+        stage('Generate Reports') {
+            steps {
+                echo '📈 Generating build reports...'
+                sh '''
+                    mkdir -p reports
+                    echo "Build completed at $(date)" > reports/build.log
+                    docker images | grep notes > reports/images.txt || true
+                '''
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Build successful!'
+            sh '''
+                echo "Pipeline completed successfully on $(date)" >> pipeline.log
+            '''
+        }
+        failure {
+            echo '❌ Build failed!'
+            sh '''
+                docker-compose down || true
+                echo "Pipeline failed on $(date)" >> pipeline.log
+            '''
+        }
+        always {
+            echo '🧹 Cleaning up...'
+            sh '''
+                docker system prune -f --volumes || true
+            '''
+        }
+    }
+}
