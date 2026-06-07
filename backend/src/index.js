@@ -15,11 +15,21 @@ const notesRoutes = require('./routes/notesRoutes');
 const app = express();
 
 // Trust proxy for Render deployment
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
-// Disable host header validation
+// Disable host header validation - CRITICAL for Render
 app.disable('x-powered-by');
 app.set('strict routing', false);
+
+// Bypass Express host header validation for Render
+// This MUST be before any other middleware
+app.use((req, res, next) => {
+  // Allow requests from Render
+  if (process.env.NODE_ENV === 'production') {
+    delete req.headers['x-forwarded-host'];
+  }
+  next();
+});
 
 // Middleware - CORS before everything else
 app.use(cors({
@@ -37,18 +47,6 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Handle preflight requests
 app.options('*', cors());
-
-// Custom middleware to handle host header validation
-app.use((req, res, next) => {
-  // Remove strict host header validation
-  // This allows requests from different domains on Render
-  const host = req.get('host');
-  if (host && host.includes('onrender.com')) {
-    // Allow all Render internal requests
-    req.headers.host = host;
-  }
-  next();
-});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/notes-management', {
