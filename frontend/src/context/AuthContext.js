@@ -3,6 +3,17 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
+// Get API URL from environment or use current domain
+const API_URL = process.env.REACT_APP_API_URL || '';
+
+// Create axios instance with base URL
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -11,10 +22,10 @@ export const AuthProvider = ({ children }) => {
   // Configure axios with token
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       localStorage.setItem('token', token);
     } else {
-      delete axios.defaults.headers.common['Authorization'];
+      delete apiClient.defaults.headers.common['Authorization'];
       localStorage.removeItem('token');
     }
   }, [token]);
@@ -24,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       const fetchUser = async () => {
         try {
-          const response = await axios.get('/api/auth/me');
+          const response = await apiClient.get('/api/auth/me');
           setUser(response.data.user);
         } catch (error) {
           console.error('Error fetching user:', error);
@@ -38,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (idToken) => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/auth/google-login', {
+      const response = await apiClient.post('/api/auth/google-login', {
         idToken: idToken,
       });
       const { token: newToken, user: userData } = response.data;
@@ -55,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post('/api/auth/logout');
+      await apiClient.post('/api/auth/logout');
       setToken(null);
       setUser(null);
     } catch (error) {
