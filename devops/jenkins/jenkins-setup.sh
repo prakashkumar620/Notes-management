@@ -1,9 +1,9 @@
-# Jenkins Installation and Configuration Script
+docker ps | findstr jenkins# Jenkins Installation and Configuration Script
 
 #!/bin/bash
 
 echo "================================================"
-echo "Jenkins Setup for Notes Management System"
+echo "Jenkins Setup for Prakash Study Stack"
 echo "================================================"
 
 # Variables

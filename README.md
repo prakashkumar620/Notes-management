@@ -1,8 +1,8 @@
-# README - Notes Management System
+# README - Prakash Study Stack
 
 ## 🎯 Project Overview
 
-A production-ready Role-Based Notes Management System demonstrating complete DevOps lifecycle with enterprise-grade architecture, security, and monitoring.
+A production-ready Prakash Study Stack demonstrating complete DevOps lifecycle with enterprise-grade architecture, security, and monitoring.
 
 **Live Deployment**:
 - Frontend: http://localhost:3000
@@ -33,7 +33,7 @@ A production-ready Role-Based Notes Management System demonstrating complete Dev
 ```bash
 # 1. Clone repository
 git clone <repo-url>
-cd notes-management-system
+cd prakash-study-stack
 
 # 2. Set environment variables
 export GOOGLE_CLIENT_ID="your_client_id"
@@ -52,7 +52,7 @@ docker-compose up -d
 ## 📁 Project Structure
 
 ```
-notes-management-system/
+prakash-study-stack/
 ├── backend/                          # Node.js + Express API
 │   ├── src/
 │   │   ├── config/                   # Database configuration

@@ -1,4 +1,4 @@
-# Interview Q&A - Notes Management System
+# Interview Q&A - Prakash Study Stack
 
 ## System Architecture Questions
 

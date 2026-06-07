@@ -248,7 +248,7 @@ const Login = () => {
     <LoginContainer>
       <LoginBox>
         <Title>📚 Study Stack</Title>
-        <Subtitle>Role-Based Notes Management System</Subtitle>
+        <Subtitle>Prakash Study Stack - Role-Based Notes Management</Subtitle>
         <ErrorMessage show={!!error}>{error}</ErrorMessage>
         
         <GoogleButtonWrapper>

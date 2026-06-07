@@ -1,7 +1,7 @@
 {
-  "name": "notes-management-system-backend",
+  "name": "prakash-study-stack-backend",
   "version": "1.0.0",
-  "description": "Backend for Role-Based Notes Management System",
+  "description": "Backend for Role-Based Prakash Study Stack",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

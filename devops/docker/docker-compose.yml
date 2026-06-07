@@ -1,4 +1,4 @@
-# Docker Compose configuration for Notes Management System
+# Docker Compose configuration for Prakash Study Stack
 # Before running, set your Google OAuth credentials:
 # export GOOGLE_CLIENT_ID="your_client_id"
 # export GOOGLE_CLIENT_SECRET="your_client_secret"
@@ -30,14 +30,12 @@ services:
       context: ../../
       dockerfile: devops/docker/Dockerfile.backend
     container_name: notes-backend
+    env_file:
+      - ./../../backend/.env
     environment:
       MONGODB_URI: mongodb://admin:password@mongodb:27017/notes-management?authSource=admin
-      JWT_SECRET: ac700e8071cba6c7fc809ed908a62739b70af6b89d357c11007fe8c1c794b8bb
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-placeholder}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-placeholder}
       NODE_ENV: production
       PORT: 5000
-      CORS_ORIGIN: http://localhost:3000
     ports:
       - "5000:5000"
     depends_on:
@@ -55,9 +53,6 @@ services:
     container_name: notes-frontend
     ports:
       - "3000:80"
-    environment:
-      REACT_APP_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-placeholder}
-      REACT_APP_API_BASE_URL: http://localhost:5000
     depends_on:
       - backend
     networks:

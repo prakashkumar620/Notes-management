@@ -4,7 +4,7 @@
 
 ### Option A: Docker Compose (5 minutes) ⭐ EASIEST
 ```bash
-cd notes-management-system/devops/docker
+cd prakash-study-stack/devops/docker
 export GOOGLE_CLIENT_ID="your_id"
 export GOOGLE_CLIENT_SECRET="your_secret"
 docker-compose up -d

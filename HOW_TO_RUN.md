@@ -34,7 +34,7 @@ Make sure you have these installed:
 ```powershell
 # On Windows: Open PowerShell
 # Navigate to the docker folder
-cd D:\studystack1\notes-management-system\devops\docker
+cd D:\studystack1\prakash-study-stack\devops\docker
 ```
 
 **Verify you're in the right location:**
@@ -230,7 +230,7 @@ http://localhost:3000
 
 **Stop all services:**
 ```powershell
-cd D:\studystack1\notes-management-system\devops\docker
+cd D:\studystack1\prakash-study-stack\devops\docker
 docker-compose down
 ```
 
@@ -442,7 +442,7 @@ After running the project, verify:
 # 1. Start Docker Desktop (wait for system tray icon)
 
 # 2. Navigate to docker folder
-cd D:\studystack1\notes-management-system\devops\docker
+cd D:\studystack1\prakash-study-stack\devops\docker
 
 # 3. Start services
 docker-compose up -d --build

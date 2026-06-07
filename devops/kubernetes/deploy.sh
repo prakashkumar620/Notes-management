@@ -3,7 +3,7 @@
 # Kubernetes Deployment Script
 
 echo "================================"
-echo "Notes Management System - K8s Setup"
+echo "Prakash Study Stack - K8s Setup"
 echo "================================"
 
 # Create namespace

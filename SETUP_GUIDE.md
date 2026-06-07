@@ -1,8 +1,8 @@
-# Role-Based Notes Management System - Complete Setup Guide
+# Role-Based Prakash Study Stack - Complete Setup Guide
 
 ## Project Overview
 
-A production-level Notes Management System with complete DevOps lifecycle including:
+A production-level Prakash Study Stack with complete DevOps lifecycle including:
 - **Frontend**: React with Google OAuth login
 - **Backend**: Node.js + Express + MongoDB
 - **DevOps**: Docker, Kubernetes, Jenkins, SonarQube, Nexus, Terraform, Ansible
@@ -62,7 +62,7 @@ A production-level Notes Management System with complete DevOps lifecycle includ
 
 ```bash
 # Navigate to project directory
-cd notes-management-system
+cd prakash-study-stack
 
 # Setup environment variables
 cp backend/.env.example backend/.env
@@ -252,7 +252,7 @@ Password: (get from `docker logs jenkins | grep password`)
 
 ### 3. Configure Jenkins Pipeline
 
-1. Create new job: "Notes-Management-System"
+1. Create new job: "Prakash-Study-Stack"
 2. Select "Pipeline" job type
 3. In pipeline section, choose "Pipeline script from SCM"
 4. Configure Git repository

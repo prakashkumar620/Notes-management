@@ -2,7 +2,7 @@
 
 ## What Has Been Created
 
-I've built you a **complete, production-ready Role-Based Notes Management System** with enterprise-grade DevOps infrastructure. This is a comprehensive, real-world project that demonstrates:
+I've built you a **complete, production-ready Prakash Study Stack** with enterprise-grade DevOps infrastructure. This is a comprehensive, real-world project that demonstrates:
 
 ### ✅ Complete Deliverables
 
@@ -70,7 +70,7 @@ I've built you a **complete, production-ready Role-Based Notes Management System
 ## 📁 Project Structure Overview
 
 ```
-notes-management-system/
+prakash-study-stack/
 ├── frontend/                    # React SPA
 ├── backend/                     # Express API
 ├── devops/
@@ -98,7 +98,7 @@ notes-management-system/
 
 ### Option A: Docker Compose (⭐ Easiest - 5 minutes)
 ```bash
-cd notes-management-system/devops/docker
+cd prakash-study-stack/devops/docker
 export GOOGLE_CLIENT_ID="your_id"
 export GOOGLE_CLIENT_SECRET="your_secret"
 docker-compose up -d
@@ -363,7 +363,7 @@ You can confidently discuss this in interviews and add it to your portfolio.
 
 ## 🎉 Congratulations!
 
-You now have a **complete, deployable Notes Management System** with:
+You now have a **complete, deployable Prakash Study Stack** with:
 - ✅ Full-stack application
 - ✅ Complete DevOps infrastructure
 - ✅ 10 enterprise tools integrated

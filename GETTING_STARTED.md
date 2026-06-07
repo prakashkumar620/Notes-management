@@ -2,12 +2,12 @@
 
 ## ✅ What Has Been Created
 
-I've built a **complete production-level Role-Based Notes Management System** with enterprise-grade DevOps infrastructure. Here's what you now have:
+I've built a **complete production-level Prakash Study Stack** with enterprise-grade DevOps infrastructure. Here's what you now have:
 
 ### 📦 Project Structure Created
 
 ```
-notes-management-system/
+prakash-study-stack/
 ├── backend/              - Node.js + Express API (fully functional)
 ├── frontend/             - React SPA with Google OAuth
 ├── devops/
@@ -43,7 +43,7 @@ notes-management-system/
 ### Option 1: Docker Compose (Easiest - 5 minutes)
 
 ```bash
-cd notes-management-system/devops/docker
+cd prakash-study-stack/devops/docker
 
 # Set your Google OAuth credentials
 export GOOGLE_CLIENT_ID="your_client_id_here"
@@ -160,7 +160,7 @@ kubectl port-forward -n notes-management svc/backend 5000:5000
 ### Step 1: Get Google OAuth Credentials (10 minutes)
 ```
 1. Go to: https://console.cloud.google.com
-2. Create new project: "Notes Management System"
+2. Create new project: "Prakash Study Stack"
 3. Enable Google+ API
 4. Create OAuth 2.0 Credentials (OAuth consent screen)
 5. Application type: Web application
@@ -173,7 +173,7 @@ kubectl port-forward -n notes-management svc/backend 5000:5000
 
 ### Step 2: Configure Environment
 ```bash
-cd notes-management-system
+cd prakash-study-stack
 
 # Backend environment
 cd backend
@@ -437,7 +437,7 @@ By completing this project, you'll have demonstrated:
 
 You can use these to enhance your resume:
 
-- *"Architected and deployed a production-level Notes Management System with complete DevOps lifecycle, integrating 10+ enterprise tools (Docker, K8s, Jenkins, SonarQube, Prometheus)"*
+- *"Architected and deployed a production-level Prakash Study Stack with complete DevOps lifecycle, integrating 10+ enterprise tools (Docker, K8s, Jenkins, SonarQube, Prometheus)"*
 
 - *"Built full-stack MERN application with Google OAuth, role-based access control, and file management system serving 100+ concurrent users"*
 

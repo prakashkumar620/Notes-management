@@ -9,7 +9,7 @@ pipeline {
     
     environment {
         REGISTRY = 'localhost:5000'
-        APP_NAME = 'notes-management-system'
+        APP_NAME = 'prakash-study-stack'
         DOCKER_NETWORK = 'jenkins-network'
         SONAR_HOST = 'http://localhost:9000'
         NEXUS_HOST = 'http://localhost:8081'

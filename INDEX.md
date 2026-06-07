@@ -1,11 +1,11 @@
-# 📚 Study Stack - Notes Management System
+# 📚 Prakash Study Stack
 ## Production-Grade Full-Stack Application with Complete DevOps Lifecycle
 
 ---
 
 ## 🎯 Project Overview
 
-A **comprehensive, enterprise-ready Notes Management System** built with modern technologies and best practices. This project demonstrates complete full-stack development, DevOps excellence, and production-grade architecture.
+A **comprehensive, enterprise-ready Prakash Study Stack** built with modern technologies and best practices. This project demonstrates complete full-stack development, DevOps excellence, and production-grade architecture.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

@@ -9,7 +9,7 @@
 ```bash
 # 1. Clone and navigate to project
 git clone <repo-url>
-cd notes-management-system
+cd prakash-study-stack
 
 # 2. Setup Google OAuth
 # Get credentials from: https://console.cloud.google.com
@@ -347,7 +347,7 @@ kubectl exec -it <pod-name> -n notes-management -- /bin/bash
 git push origin main  # Webhook triggered
 
 # View pipeline status
-# Jenkins UI: http://localhost:8080/job/Notes-Management-System
+# Jenkins UI: http://localhost:8080/job/Prakash-Study-Stack
 
 # View artifacts
 # Jenkins workspace or Nexus repository

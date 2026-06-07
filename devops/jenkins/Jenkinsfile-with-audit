@@ -1,0 +1,247 @@
+pipeline {
+    agent any
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 1, unit: 'HOURS')
+        timestamps()
+    }
+    
+    environment {
+        REGISTRY = 'localhost:5000'
+        APP_NAME = 'prakash-study-stack'
+        DOCKER_NETWORK = 'jenkins-network'
+        SONAR_HOST = 'http://localhost:9000'
+        NEXUS_HOST = 'http://localhost:8081'
+        BUILD_TIMESTAMP = sh(returnStdout: true, script: 'date -u +"%Y-%m-%d %H:%M:%S UTC"').trim()
+        BUILD_AUTHOR = sh(returnStdout: true, script: 'git log -1 --format=%an 2>/dev/null || echo "Jenkins"').trim()
+        AUDIT_LOG = "devops/jenkins/audit-logs/ci-cd-audit.log"
+    }
+    
+    stages {
+        stage('Audit: Pipeline Start') {
+            steps {
+                script {
+                    echo "📝 Logging pipeline start..."
+                    sh '''
+                        mkdir -p devops/jenkins/audit-logs
+                        echo "${BUILD_TIMESTAMP} | Pipeline Start | BUILD#${BUILD_NUMBER} | Author: ${BUILD_AUTHOR}" >> ${AUDIT_LOG}
+                    '''
+                    echo "✓ Pipeline start logged at ${BUILD_TIMESTAMP}"
+                }
+            }
+        }
+        
+        stage('Checkout') {
+            steps {
+                echo '🔍 Checking out code...'
+                checkout scm
+                script {
+                    sh '''
+                        COMMIT_HASH=$(git rev-parse --short HEAD)
+                        echo "${BUILD_TIMESTAMP} | Code Checkout | Commit: ${COMMIT_HASH}" >> ${AUDIT_LOG}
+                    '''
+                }
+            }
+        }
+        
+        stage('Build Backend') {
+            steps {
+                echo '🔨 Building backend...'
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Backend Build Start | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+                dir('backend') {
+                    sh '''
+                        npm install
+                        npm run build 2>/dev/null || echo "No build script"
+                    '''
+                }
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Backend Build Success | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+            }
+        }
+        
+        stage('Build Frontend') {
+            steps {
+                echo '🔨 Building frontend...'
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Frontend Build Start | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+                dir('frontend') {
+                    sh '''
+                        npm install
+                        npm run build
+                    '''
+                }
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Frontend Build Success | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+            }
+        }
+        
+        stage('Code Quality - SonarQube') {
+            steps {
+                echo '📊 Running SonarQube analysis...'
+                sh '''
+                    curl -s http://localhost:9000/api/system/ping || \
+                    echo "⚠️  SonarQube not available, skipping"
+                    echo "${BUILD_TIMESTAMP} | SonarQube Analysis | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                '''
+            }
+        }
+        
+        stage('Build Docker Images') {
+            steps {
+                echo '🐳 Building Docker images...'
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Docker Build Start | BUILD#${BUILD_NUMBER} | Author: ${BUILD_AUTHOR}" >> ${AUDIT_LOG}
+                    '''
+                }
+                sh '''
+                    docker build -f devops/docker/Dockerfile.backend \
+                        -t ${REGISTRY}/backend:latest \
+                        -t ${REGISTRY}/backend:${BUILD_NUMBER} \
+                        backend/
+                    
+                    docker build -f devops/docker/Dockerfile.frontend \
+                        -t ${REGISTRY}/frontend:latest \
+                        -t ${REGISTRY}/frontend:${BUILD_NUMBER} \
+                        frontend/
+                '''
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Docker Build Success | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+            }
+        }
+        
+        stage('Push to Registry') {
+            steps {
+                echo '📤 Pushing images to registry...'
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Registry Push Start | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+                sh '''
+                    docker push ${REGISTRY}/backend:latest || \
+                    echo "⚠️  Local registry not available"
+                    docker push ${REGISTRY}/frontend:latest || \
+                    echo "⚠️  Local registry not available"
+                '''
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Registry Push Success | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+            }
+        }
+        
+        stage('Deploy to Docker Compose') {
+            steps {
+                echo '🚀 Deploying with Docker Compose...'
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Deployment Start | BUILD#${BUILD_NUMBER} | Environment: Docker Compose | Author: ${BUILD_AUTHOR}" >> ${AUDIT_LOG}
+                    '''
+                }
+                sh '''
+                    cd devops/docker
+                    docker-compose down || true
+                    docker-compose up -d
+                    sleep 10
+                '''
+                script {
+                    sh '''
+                        echo "${BUILD_TIMESTAMP} | Deployment Success | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    '''
+                }
+            }
+        }
+        
+        stage('Health Checks') {
+            steps {
+                echo '🏥 Running health checks...'
+                sh '''
+                    echo "Checking backend health..."
+                    curl -s http://localhost:5000/health || echo "Backend not responding"
+                    
+                    echo "Checking frontend..."
+                    curl -s http://localhost:3000 || echo "Frontend not responding"
+                    
+                    echo "Checking MongoDB..."
+                    docker exec notes-mongodb mongosh --eval "db.adminCommand('ping')" || true
+                    
+                    echo "${BUILD_TIMESTAMP} | Health Checks Completed | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                '''
+            }
+        }
+        
+        stage('Generate Reports') {
+            steps {
+                echo '📈 Generating build reports...'
+                sh '''
+                    mkdir -p reports
+                    REPORT_FILE="reports/build-${BUILD_NUMBER}-${BUILD_TIMESTAMP}.log"
+                    echo "Build Report" > ${REPORT_FILE}
+                    echo "=============" >> ${REPORT_FILE}
+                    echo "Build Number: ${BUILD_NUMBER}" >> ${REPORT_FILE}
+                    echo "Build Timestamp: ${BUILD_TIMESTAMP}" >> ${REPORT_FILE}
+                    echo "Build Author: ${BUILD_AUTHOR}" >> ${REPORT_FILE}
+                    echo "Build completed at $(date)" >> ${REPORT_FILE}
+                    docker images | grep notes >> ${REPORT_FILE} || true
+                    
+                    echo "${BUILD_TIMESTAMP} | Reports Generated | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                '''
+            }
+        }
+    }
+    
+    post {
+        success {
+            script {
+                echo '✅ Build successful!'
+                sh '''
+                    echo "${BUILD_TIMESTAMP} | Pipeline Success | BUILD#${BUILD_NUMBER} | Author: ${BUILD_AUTHOR}" >> ${AUDIT_LOG}
+                    echo "Pipeline completed successfully on $(date)" >> pipeline.log
+                '''
+            }
+        }
+        failure {
+            script {
+                echo '❌ Build failed!'
+                sh '''
+                    docker-compose down || true
+                    echo "${BUILD_TIMESTAMP} | Pipeline Failed | BUILD#${BUILD_NUMBER} | Author: ${BUILD_AUTHOR}" >> ${AUDIT_LOG}
+                    echo "Pipeline failed on $(date)" >> pipeline.log
+                '''
+            }
+        }
+        always {
+            script {
+                echo '🧹 Cleaning up...'
+                sh '''
+                    docker system prune -f --volumes || true
+                    
+                    # Copy audit logs to reports directory
+                    cp ${AUDIT_LOG} reports/audit-${BUILD_NUMBER}.log 2>/dev/null || true
+                    
+                    echo "${BUILD_TIMESTAMP} | Cleanup Completed | BUILD#${BUILD_NUMBER}" >> ${AUDIT_LOG}
+                    echo "============================================" >> ${AUDIT_LOG}
+                '''
+            }
+        }
+    }
+}

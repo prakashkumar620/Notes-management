@@ -1,9 +1,9 @@
 # Resume Project Description
 
-## Role-Based Notes Management System - Production Deployment
+## Role-Based Prakash Study Stack - Production Deployment
 
 **Project Overview:**
-Architected and implemented a complete production-level Notes Management System with enterprise-grade DevOps practices, demonstrating expertise in full-stack development, containerization, orchestration, and CI/CD automation.
+Architected and implemented a complete production-level Prakash Study Stack with enterprise-grade DevOps practices, demonstrating expertise in full-stack development, containerization, orchestration, and CI/CD automation.
 
 **Key Achievements:**
 
@@ -158,7 +158,7 @@ Architected and implemented a complete production-level Notes Management System 
 ## Interview Talking Points
 
 1. **"Tell me about your most complex project:"**
-   - "This Notes Management System project allowed me to demonstrate full-stack capabilities from frontend development to production DevOps. I managed all aspects including architecture design, implementation, containerization, and operational deployment."
+   - "This Prakash Study Stack project allowed me to demonstrate full-stack capabilities from frontend development to production DevOps. I managed all aspects including architecture design, implementation, containerization, and operational deployment."
 
 2. **"How do you ensure code quality?"**
    - "I integrated SonarQube into the CI/CD pipeline to automatically analyze every commit. This identified and prevented bugs before they reached production. I also implemented comprehensive monitoring to track application health."

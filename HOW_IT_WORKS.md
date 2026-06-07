@@ -1,4 +1,4 @@
-# 📚 How Study Stack Notes Management System Works
+# 📚 How Prakash Study Stack Works
 
 ## 🎯 System Overview
 
@@ -30,7 +30,7 @@ This is a **full-stack web application** that allows students and teachers to ma
 
 ### Location
 ```
-D:\studystack1\notes-management-system\frontend\
+D:\studystack1\prakash-study-stack\frontend\
 ```
 
 ### What It Does
@@ -78,7 +78,7 @@ DELETE /api/notes/:id            (delete note)
 
 ### Location
 ```
-D:\studystack1\notes-management-system\backend\src\
+D:\studystack1\prakash-study-stack\backend\src\
 ```
 
 ### What It Does
@@ -213,7 +213,7 @@ MongoDB Container (port 27017)
 
 ### Location
 ```
-D:\studystack1\notes-management-system\backend\uploads\
+D:\studystack1\prakash-study-stack\backend\uploads\
 ```
 
 ### What Happens

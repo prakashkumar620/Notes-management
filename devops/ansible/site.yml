@@ -1,11 +1,11 @@
 ---
-- name: Setup Notes Management System Infrastructure
+- name: Setup Prakash Study Stack Infrastructure
   hosts: all
   become: yes
   gather_facts: yes
   
   vars:
-    app_name: "notes-management-system"
+    app_name: "prakash-study-stack"
     docker_network: "notes-network"
     
   tasks:
