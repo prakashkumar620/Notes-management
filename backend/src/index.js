@@ -34,6 +34,9 @@ app.use(express.urlencoded({ limit: '300mb', extended: true }));
 // Serve uploaded files as static
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Handle preflight requests
+app.options('*', cors());
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/notes-management', {
   useNewUrlParser: true,
@@ -48,6 +51,15 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
+  });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Notes Management API',
+    version: '1.0.0',
+    status: 'running'
   });
 });
 
