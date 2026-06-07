@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const http = require('http');
 
 // Load environment variables
 dotenv.config();
@@ -36,11 +35,20 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Handle preflight requests
 app.options('*', cors());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/notes-management', {
+// MongoDB Connection - optimized for serverless
+const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-})
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+};
+
+if (process.env.NODE_ENV === 'production') {
+  mongooseOptions.maxPoolSize = 5; // Vercel serverless limit
+}
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/notes-management', mongooseOptions)
   .then(() => console.log('✓ MongoDB connected'))
   .catch(err => console.error('✗ MongoDB connection error:', err));
 
@@ -89,27 +97,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server - using http.createServer to bypass host header validation
-const PORT = process.env.PORT || 5000;
-
-// Create HTTP server directly to avoid Express host header validation
-const server = http.createServer((req, res) => {
-  // RENDER FIX: Bypass host header validation by setting checkServerIdentity
-  app(req, res);
-});
-
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`✓ Server running on http://0.0.0.0:${PORT}`);
-  console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-
-// Handle server errors
-server.on('clientError', (err, socket) => {
-  if (err.code === 'HPE_HEADER_OVERFLOW') {
-    socket.end('HTTP/1.1 431 Request Header Fields Too Large\r\n\r\n');
-  } else if (err.code !== 'ECONNRESET') {
-    socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-  }
-});
+// Start Server - Only for local development
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✓ Server running on http://0.0.0.0:${PORT}`);
+    console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}
 
 module.exports = app;

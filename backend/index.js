@@ -1,5 +1,7 @@
-// Backend entry point for Vercel
+// Vercel Serverless Function Handler
 require('dotenv').config();
 
-// Start the Express server from src/index.js
-require('./src/index.js');
+const app = require('./src/index.js');
+
+// Export the Express app for Vercel
+module.exports = app;
