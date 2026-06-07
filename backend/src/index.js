@@ -15,29 +15,19 @@ const notesRoutes = require('./routes/notesRoutes');
 const app = express();
 
 // Trust proxy for Render deployment
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
-// Middleware
-const corsOptions = {
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      process.env.CORS_ORIGIN,
-      'http://localhost:3000',
-      'http://localhost:5000'
-    ].filter(Boolean);
-    
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow all for now
-    }
-  },
+// Disable X-Powered-By header
+app.disable('x-powered-by');
+
+// Middleware - CORS before everything else
+app.use(cors({
+  origin: true, // Allow all origins for now
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json({ limit: '300mb' }));
 app.use(express.urlencoded({ limit: '300mb', extended: true }));
 
