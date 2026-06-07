@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "public": true,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-builds",
+      "config": {
+        "distDir": "frontend/build"
+      }
+    },
+    {
+      "src": "backend/api.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/api.js"
+    },
+    {
+      "src": "/health",
+      "dest": "backend/api.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/build/$1"
+    },
+    {
+      "src": "/",
+      "dest": "frontend/build/index.html"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "GOOGLE_CLIENT_ID": "@google_client_id",
+    "GOOGLE_CLIENT_SECRET": "@google_client_secret",
+    "JWT_SECRET": "@jwt_secret",
+    "NODE_ENV": "production"
+  }
+}
+

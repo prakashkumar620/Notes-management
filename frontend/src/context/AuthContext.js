@@ -3,8 +3,8 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-// Get API URL from environment or use current domain
-const API_URL = process.env.REACT_APP_API_URL || '';
+// Get API URL from environment or default to /api for Vercel
+const API_URL = process.env.REACT_APP_API_URL || '/api';
 
 // Create axios instance with base URL
 const apiClient = axios.create({
