@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-// Get API URL from environment or default to /api for Vercel
+// API URL - on Vercel, backend is served under /api prefix
 const API_URL = process.env.REACT_APP_API_URL || '/api';
 
 // Create axios instance with base URL

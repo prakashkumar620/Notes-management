@@ -2,9 +2,9 @@
   "name": "prakash-study-stack-backend",
   "version": "1.0.0",
   "description": "Backend for Role-Based Prakash Study Stack",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node index.js",
     "dev": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src --fix"
