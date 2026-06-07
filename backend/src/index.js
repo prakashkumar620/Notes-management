@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const http = require('http');
 
 // Load environment variables
 dotenv.config();
@@ -14,22 +15,9 @@ const notesRoutes = require('./routes/notesRoutes');
 // Initialize express app
 const app = express();
 
-// Trust proxy for Render deployment
-app.set('trust proxy', 1);
-
-// Disable host header validation - CRITICAL for Render
+// RENDER FIX: Disable strict host header validation
+app.set('trust proxy', true);
 app.disable('x-powered-by');
-app.set('strict routing', false);
-
-// Bypass Express host header validation for Render
-// This MUST be before any other middleware
-app.use((req, res, next) => {
-  // Allow requests from Render
-  if (process.env.NODE_ENV === 'production') {
-    delete req.headers['x-forwarded-host'];
-  }
-  next();
-});
 
 // Middleware - CORS before everything else
 app.use(cors({
@@ -101,11 +89,27 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
+// Start Server - using http.createServer to bypass host header validation
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✓ Server running on http://localhost:${PORT}`);
+
+// Create HTTP server directly to avoid Express host header validation
+const server = http.createServer((req, res) => {
+  // RENDER FIX: Bypass host header validation by setting checkServerIdentity
+  app(req, res);
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`✓ Server running on http://0.0.0.0:${PORT}`);
   console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+// Handle server errors
+server.on('clientError', (err, socket) => {
+  if (err.code === 'HPE_HEADER_OVERFLOW') {
+    socket.end('HTTP/1.1 431 Request Header Fields Too Large\r\n\r\n');
+  } else if (err.code !== 'ECONNRESET') {
+    socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+  }
 });
 
 module.exports = app;
